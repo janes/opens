@@ -327,32 +327,7 @@
             a cluster automatically.</p>
           </aside>
         </section>
-        <section>
-        <section>
-          <h2>Minion Daemon:<br /><code>kubernetes-proxy</code></h2>
-          <img style="border: 0px; height: 200px;" src="images/kubernetes_proxy.png" alt="The proxy maps a single port on the minion to all relevant pods" />
-          <p>&nbsp;</p>
-          <ul>
-            <li>O proxy service mapeia as portas comuns <em>em todos os minions</em> para os pods relevantes <em>através o cluster inteiro</em><br />&nbsp;</li>
-            <li>Pods são escolhidos comparando  <em>nome</em> na definição do proxy com os nomes dos pods<br />&nbsp;</li>
-            <li>O mapeamento de uma porta do host minion para o nome do pod é chamada de <strong>serviço</strong></li>
-          </ul>
-          <aside class="notes">
-            <p>The interesting thing about the service proxy is that every minion gets all of the
-            service proxy rules, regardless of which pods are actually running on the them. The
-            job of the proxy starts with the question: "does this minion have any pods that match
-            each of the service labels that I know about?"</p>
-            <p>In this diagram, the proxy knows about three services. But looking over the pods that
-            are running, the proxy sees that it can't handle requests for the mongo service. On the
-            other hand, it's got two running pods that match the 'nginx' label, so it will handle the
-            routing and traffic management to those pods.</p>
-            <p>The proxy service is <em>not</em> responsible for managing pods. All it does is indicates
-            whether or not the minion can handle a given service request, and if there's more than one
-            pod that can satisfy the request, it does the traffic management.</p>
-          </aside>
-        </section>
-      
-        </section>
+        
         <section>
           <h2>Gerenciamento de Cluster</h2>
           <table style="margin-left: auto; margin-right: auto;">
