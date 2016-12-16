@@ -150,10 +150,10 @@
           <h2>Layers and UFS</h2>
           <ul>
             <li>Um ou mais file systems read-only e um file system read/write<br />&nbsp;</li>
-            <li>Todos são apresentados como um único file system utilizando um dos seguintes métodos: device mapper thin provisioning (direct-lvm, loopback-lvm) ou nível do filesystem (btrfs, OverlayFS)<br />&nbsp;</li>
-            <li>O comportamento é similar a um LiveCD<br />&nbsp;</li>
+            <li>Todos são apresentados como um único file system.</li>
+            
           </ul>
-          <p>&nbsp;<br />"Container de Volume de dados": Um container Docker com apenas um file system read/write, podendo existir somente no container or com link para uma storage no hospedeiro</p>
+          <p>&nbsp;<br />"Container de Volume de dados": Um container Docker com apenas um file system read/write, podendo existir somente ou container or com link para uma storage no hospedeiro</p>
         </section>
         <section>
           <h2>Imagens</h2>
@@ -345,19 +345,7 @@
             pod that can satisfy the request, it does the traffic management.</p>
           </aside>
         </section>
-        <section>
-          <h2>More on Labels</h2>
-          <img style="height: 350px; background-color: #FFF;" src="images/labels.jpg" alt="A lot of labels" />
-          <ul>
-            <li>A label or consists of a key and a value (also called a <em>selector</em>)</li>
-            <li>A pod can have any number of labels; each label must have a unique <em>key</em></li>
-            <li>Examples: <code>service=nginx</code>, <code>environment=prod</code>, <code>tier=frontend</code></li>
-          </ul>
-          <aside class="notes">
-            <p>At this point we should probably talk a little more about labels. This is a concept that is
-            central to the Kubernetes design, but it somewhat hidden by the implementation.</p>
-          </aside>
-        </section>
+      
         </section>
         <section>
           <h2>Gerenciamento de Cluster</h2>
