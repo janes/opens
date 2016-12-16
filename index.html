@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>OpenShift 3: The New PaaS</title>
+    <meta name="description" content="The Red Hat OpenShift 3 Lab for Amazon re:Invent 2014">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/openshift.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+      if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+      }
+    </script>
+    <style type="text/css">
+      .reveal {
+        font-size: 28px;
+      }
+      .reveal li {
+        margin-bottom: 12px;
+      }
+      .reveal dt {
+        font-weight: bold;
+      }
+    </style>
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="reveal">
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h1>Openshift</h1>
+          <h3>Plataforma como Serviço para microservicos executados em containers</h3>
+          <p>
+            <small>
+              <br />
+              <a >Fabio Janes</a> <br />
+              <a >Wilson Jr</a> 
+            </small>
+          </p>
+        </section>
+        <section>
+          <h2>Agenda</h2>
+          <table style="margin-left: auto; margin-right: auto;">
+            <tr>
+              <td>
+                <ul>
+                  <li>Introdução</li>
+                  <li><a href="#/intro-paas">O Que é PAAS?</a></li>
+                  <li><a href="#/intro-docker">Introdução Docker</a></li>
+                  
+                </ul>
+              </td>
+              <td>&nbsp;</td>
+              <td>
+                <ul>
+                  <li><a href="#/intro-kubernetes">Introdução Kubernetes</a></li>
+                  
+                  <li><a href="#/intro-openshift-3">Introdução OpenShift 3</a></li>
+                  
+                 <li><a href="#/openshift-3-demo">OpenShift 3 Demo</a></li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+        </section>
+       
+       
+      
+
+        <!--WHAT IS PAAS//-->
+        <section id="intro-paas">
+          <h2>Part 1: O Que é "PAAS"?</h2>
+        </section>
+       
+     
+        <section>
+          <h2>Platforma como Serviço</h2>
+          <ul>
+            <li>Construa e teste rápido aplicações.</li>
+            <li>Codifique aplicações que podem ser implantadas em arquitetura hibrida.</li>
+            <li>Utilize a <em>facilidade</em>, <em>escalabilidade</em> e <em>poder</em> da computação em Nuvem.<br />&nbsp;</li>
+          </ul>
+          <img src="images/PaaS.png" style="height: 151px; width: 593px; padding-left: 10px; padding-right: 10px;" />
+          <table style="margin-left: auto; margin-right: auto; width: 593px">
+            <tr>
+              <td style="font-size: smaller; font-style: italic; text-align: center; width: 20%;">Code</td>
+              <td style="font-size: smaller; font-style: italic; text-align: center; width: 15%;">&nbsp;</td>
+              <td style="font-size: smaller; font-style: italic; text-align: center; width: 30%;">Deploy</td>
+              <td style="font-size: smaller; font-style: italic; text-align: center; width: 15%;">&nbsp;</td>
+              <td style="font-size: smaller; font-style: italic; text-align: center; width: 20%;">Enjoy</td>
+            </tr>
+          </table>
+          <aside class="notes">
+            PaaS is the ideal level for interfacing the platform with source code as the input. IaaS
+            still requires weeks of setup time to get everything running. Something like an MBaaS is
+            too intrusive (with all its code generation and such). PaaS is really the sweet spot for
+            developers and those tasked with deploying applications.
+          </aside>
+        </section>
+        
+
+        <!--DOCKER//-->
+        <section id="intro-docker">
+          <h2>Part 2: Docker</h2>
+          <img style="height: 500px; background-color: #FFF;" src="images/docker-logo.png" alt="Docker.io Logo" />
+          <aside class="notes">
+            Ten minute break and then we'll start talking about Docker, which is the first piece of the new OpenShift architecture.
+          </aside>
+        </section>
+        <section>
+          <h2>O que é um Container?</h2>
+          <table>
+            <tr>
+              <td><img style="height: 300px;" src="images/docker_container.jpg" alt="Diagram of a multi-layered docker container" /></td>
+              <td style="vertical-align: middle;">
+                <ul>
+                  <li>Um <em>container</em> é uma instancia de uma <em>imagem</em></li>
+                  <li>Baseado em containers linux (namepaces, control groups)</li>
+                  <li>Combina file system <em>layers</em> em um "Union File System"</li>
+                  <li>Inclue todos os componentes necessários para executar processos e armazenar dados persistentes</li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+        </section>
+        <section>
+          <h2>Containers vs. VMs</h2>
+          <img style="height: 500px;" src="images/docker_vm_diagram.jpg" alt="Docker and VM comparison diagram" />
+        </section>
+       
+        <section>
+          <h2>Layers and UFS</h2>
+          <img style="height: 500px;" src="images/docker_container.png" alt="Diagram of a multi-layered docker container" />
+        </section>
+        <section>
+          <h2>Layers and UFS</h2>
+          <ul>
+            <li>Um ou mais file systems read-only e um file system read/write<br />&nbsp;</li>
+            <li>Todos são apresentados como um único file system utilizando um dos seguintes métodos: device mapper thin provisioning (direct-lvm, loopback-lvm) ou nível do filesystem (btrfs, OverlayFS)<br />&nbsp;</li>
+            <li>O comportamento é similar a um LiveCD<br />&nbsp;</li>
+          </ul>
+          <p>&nbsp;<br />"Container de Volume de dados": Um container Docker com apenas um file system read/write, podendo existir somente no container or com link para uma storage no hospedeiro</p>
+        </section>
+        <section>
+          <h2>Imagens</h2>
+          <ul>
+            <li>Imagens podem ser obtidas e adicionadas em um servidor de imagens.</li>
+            <li>Imagens podem ser versionadas e receber tags.</li>
+            <li>É possível fazer um diff entre diferenter versões de um <em>Containers</em> para verificar como elas diferem da imagem base.</li>
+          </ul>
+        </section>
+       
+       
+       
+       
+      
+        
+        <section>
+          <h2>Criando link entre Containers</h2>
+          <table style="margin-left: auto; margin-right: auto;">
+            <tr>
+              <td><img style="background-color: #FFF;" src="images/docker_links.png" alt="Docker links diagram" /></td>
+              <td style="vertical-align: middle;">
+                <ul>
+                  <li>Containers de um mesmo host podem ser receber links</li>
+                  <li>Links entre containers não pode ser feito de outo host</li>
+                  <li>Links são compartihados via ENV e /etc/hosts</li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+        </section>
+       
+        <section>
+          <h2>Docker: Pros e Contras</h2>
+          <table style="margin-left: auto; margin-right: auto;">
+            <tr>
+              <td>
+                <p>PRÓS:</p>
+                <ul>
+                  <li>Grande portabilidade</li>
+                  <li>Muito facil de criar e utilizar imagens derivadas de outras</li>
+                  <li>Boot rápido em containers</li>
+                </ul>
+              </td>
+              <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+              <td>
+                <p>CONTRAS:</p>
+                <ul>
+                  <li>Solução Host-centric; não tem conhecimento de mais nada</li>
+                  
+                  <li>Não possui acompanhamento e relatórios de uso</li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+        </section>
+        <section>
+          <h2>Limitações Docker</h2>
+          <ol>
+            <li >Docker não enxerga algo que não está no mesmo host</li>
+            <li >Docker não pode provisionar containers que possuem relacionamento como uma unidade</li>
+            <li >Docker não possui capacidade para gerenciar configuração de implantação em massa.</li>
+          </ol>
+          <div class="fragment">
+            <h3>Solução:</h3>
+            <br>
+            <img class="fragment" src="images/dockersmall.png" class="plain" size="10px" />
+            <img class="fragment" src="images/kubernetessmall.png" alt="Kubernetes logo concept #2" />
+            
+          </div> 
+          <aside class="notes">
+            <p>The entire docker lab could be done with a single host instance. That's a
+            by-product of Docker's chief limitation as a host-centric technology. This wasn't
+            an <em>oversight</em> as much as a scope boundary.</p>
+            <p>Even within the single-host scope, Docker doesn't provide for managing related containers as a group. If you want
+            to run a web server container alongside a database container, you have to do them one at a time.</p>
+            <p>Another problem related to the host-level focus is that Docker itself doesn't have
+            any sort of mass provisioning for containers. This includes configuration, deployment, and ongoing management.</p>
+            <p>To Docker's credit, they have specifically determined that this stuff is out of scope for their project. However,
+            it left a big opening for technologies to come along and solve. Solution? Kubernetes.</p>
+          </aside>
+        </section>
+      
+        <section>
+          <h2>Kubernetes:</h2>
+          <p>"grego para 'piloto' ou 'timoneiro'."<br />&nbsp;</p>
+         
+          <div >
+            <img style="border: 0px;" src="images/kubernetes_g.png" alt="kubernetes" />
+          </div>
+          <aside class="notes">
+            <p>So I Googled "Kubernetes", figuring that would be helpful here. First,
+            I learned that Kubernetes is a Greek word meaning 'pilot' or 'helmsman'.
+            Okay, I sort of see where you're going...</p>
+            <p>Next stop was an article that sounded really official and it claimed
+            that Kubernetes was all about declarative cluster management. Oh! Well
+            why didn't you say so before? That explains everything! Um, or not?
+            I'm not even sure anymore...</p>
+            <p>So, since we've all just gotten our hands dirty with Docker, I'm going to
+            start explaining Kubernetes in terms of things that Docker <em>doesn't</em>
+            do.</p>
+          </aside>
+        </section>
+        
+        <section>
+          <h2>Terminologia Kubernetes</h2>
+          <table style="margin-left: auto; margin-right: auto;">
+            <tr>
+              <td><img style="border: 0px;" src="images/kubernetes_minion.png" alt="Kubernetes minion diagram" /></td>
+              <td>&nbsp;</td>
+              <td style="vertical-align: middle;">
+                <dl>
+                  <dt>Minion</dt>
+                  <dd><br />Um hospedeiro Docker rodando <em>kubelet</em> e o serviço de<em>proxy</em><br />&nbsp;</dd>
+                  <dt>Pod</dt>
+                    <dd>Um ou mais containers Docker interconectados.<br />&nbsp;</dd>
+                  <dt>Cluster</dt>
+                    <dd>Uma coleção de um ou mais Minions.</dd>
+                </dl>
+              </td>
+            </tr>
+          </table>
+          <aside class="notes">
+            <p>Now we can start to get in to what Kubernetes does for Docker deployments. Let's begin with
+            some terminology...</p>
+            <p>Notice also the services that are running on this minion. Docker is the obvious one but the other three are new.
+          </aside>
+        </section>
+        <section>
+          <h2>etcd</h2>
+          <ul>
+            <li>Database key/value de alta escalabilidade</li>
+            <li>suporte a cluste nativo</li>
+            <li>Algorithm baseado em consenso RAFT</li>
+          </ul>
+          <img src="images/etcd_raft_consensus.gif" alt="Visualization of raft consensus" />
+          <aside class="notes">
+            <p>First, etcd. This is a highly available key/value store that provides the de-facto messaging layer
+            between each minion and a central controller. Strictly speaking, etcd doesn't <em>need</em> to live on
+            each minion, or on any minion. As long as there are one or more reachable instances of etcd that a
+            minion can communicate with, Kubernetes continues working.</p>
+            <p>etcd instances handle their own clustering. If you really want to get into the weeds, they
+            use the RAFT consensus algorithm to decide on the true current value for a given key. It makes
+            for a cool graphic, but we don't need to get deeper than this to use etc with Kubernetes.</p>
+          </aside>
+        </section>
+        <section>
+          <h2>Minion Daemon:<br /><code>kubernetes-kubelet</code></h2>
+          <img style="border: 0px;" src="images/kubelet.png" alt="Kubelet works between etcd and docker." />
+          <ul>
+            <li>Principal responsabilidade: gerenciamento de pod</li>
+            <li>Mantém o registro do estado dos pods</li>
+            <li>Recebe instruções de um cluster <em>master</em></li>
+          </ul>
+          <aside class="notes">
+            <p>Now, the other minion-based process is called kubelet. Its main job is pod management,
+            which really means that its main job is talking to docker. The kubelete daemon interprets
+            pod definitions in docker terms and makes the right commands to get the desired behavior.
+            All docker functionality is available through kubelet and pods.</p>
+            <p>In addition to managing docker, the kubelet has another job, which is to keep track of
+            pod running states. The kubelet is periodically polled by cluster management processes
+            to know how the cluster is doing.</p>
+            <p>Finally, another feature of the kubelet that is in the works is the ability for the
+            kubelet to register its minion with the cluster. Right now minions have to be introduced
+            manually, but when this feature is in place, a kubelet with the right credentials can join
+            a cluster automatically.</p>
+          </aside>
+        </section>
+        <section>
+        <section>
+          <h2>Minion Daemon:<br /><code>kubernetes-proxy</code></h2>
+          <img style="border: 0px; height: 200px;" src="images/kubernetes_proxy.png" alt="The proxy maps a single port on the minion to all relevant pods" />
+          <p>&nbsp;</p>
+          <ul>
+            <li>O proxy service mapeia as portas comuns <em>em todos os minions</em> para os pods relevantes <em>através o cluster inteiro</em><br />&nbsp;</li>
+            <li>Pods são escolhidos comparando  <em>nome</em> na definição do proxy com os nomes dos pods<br />&nbsp;</li>
+            <li>O mapeamento de uma porta do host minion para o nome do pod é chamada de <strong>serviço</strong></li>
+          </ul>
+          <aside class="notes">
+            <p>The interesting thing about the service proxy is that every minion gets all of the
+            service proxy rules, regardless of which pods are actually running on the them. The
+            job of the proxy starts with the question: "does this minion have any pods that match
+            each of the service labels that I know about?"</p>
+            <p>In this diagram, the proxy knows about three services. But looking over the pods that
+            are running, the proxy sees that it can't handle requests for the mongo service. On the
+            other hand, it's got two running pods that match the 'nginx' label, so it will handle the
+            routing and traffic management to those pods.</p>
+            <p>The proxy service is <em>not</em> responsible for managing pods. All it does is indicates
+            whether or not the minion can handle a given service request, and if there's more than one
+            pod that can satisfy the request, it does the traffic management.</p>
+          </aside>
+        </section>
+        <section>
+          <h2>More on Labels</h2>
+          <img style="height: 350px; background-color: #FFF;" src="images/labels.jpg" alt="A lot of labels" />
+          <ul>
+            <li>A label or consists of a key and a value (also called a <em>selector</em>)</li>
+            <li>A pod can have any number of labels; each label must have a unique <em>key</em></li>
+            <li>Examples: <code>service=nginx</code>, <code>environment=prod</code>, <code>tier=frontend</code></li>
+          </ul>
+          <aside class="notes">
+            <p>At this point we should probably talk a little more about labels. This is a concept that is
+            central to the Kubernetes design, but it somewhat hidden by the implementation.</p>
+          </aside>
+        </section>
+        </section>
+        <section>
+          <h2>Gerenciamento de Cluster</h2>
+          <table style="margin-left: auto; margin-right: auto;">
+            <tr>
+              <td><img style="border: 0px;" src="images/kubernetes_master.png" alt="Kubernetes cluster master diagram" /></td>
+              <td>&nbsp;</td>
+              <td style="vertical-align: middle;">
+                <dl>
+                  <dt>Kubernetes API</dt>
+                  <dd>A API RESTful do Kubernetes é exposta utilizando o nginx<br />&nbsp;</dd>
+                  <dt>Scheduler</dt>
+                  <dd>Escolhe os minions para os pods<br />&nbsp;</dd>
+                  <dt>Controller Manager</dt>
+                  <dd>Serviço de monitoramento de pods<br />&nbsp;</dd>
+                  <dt><code>kubecfg</code></dt>
+                  <dd>CLI que interage com cluster de Kubernetes</dd>
+                </dl>
+              </td>
+            </tr>
+          </table>
+          <aside class="notes">
+            <p>A cluster master is a host that acts as both a front end and health monitor for a Kubernetes cluster. The
+            master it self does not run docker and therefore does not host pods. Instead, it provides a web API and runs
+            a simple monitoring service that checks for the existence of specified pod deployments.</p>
+            <p>Finally, the cluster master also provides a utility called kubecfg that enables users to interact with the
+            cluster.</p>
+          </aside>
+        </section>
+        <section>
+          <h2>API do Kubernetes</h2>
+          <ul>
+            <li>Minions (docker hosts)</li>
+            <li>Pods (docker container configurations)</li>
+            <li>Services (port proxy mappings)</li>
+            <li><em>Replication Controllers</em> (replicated, monitored pod deployments)</li>
+          </ul>
+          
+          
+          <aside class="notes">
+            <p>By now we've already covered most of the things that are available through the API.
+            However, there's one last piece to talk about, and that is something called a Replication
+            Controller.</p>
+            <p>Pods and minions are really just convenient ways of managing docker hosts and containers.
+            Service and Replication Controllers bring us that cluster management thinking that really
+            defines Kubernetes.</p>
+          </aside>
+        </section>
+        
+         <section>
+          <h2><code>controller-manager</code><br />and Replication Controllers</h2>
+          <p>&nbsp;</p>
+          <ul>
+                  <li>Voce diz o que precisa, ele decide quais minions fazer deploy</li>
+                  <li>Monitoramento constante; inicia e para os pods de acordo com a necessidade (configuração de quantidade de pods)</li>
+                  <li>Desacoplado do proxy de serviço</li>
+          </ul>
+          
+          
+        </section>
+
+       
+         <section>
+          <h2>Limitações Kubernetes</h2>
+          <p>&nbsp;</p>
+          <ul>
+            <li >Não possui o conceito de <em>applicação</em> completa.</li>
+            <li >Não possui capacidade de contruir e implantar imagens Docker a partir do código fonte.</li>
+            <li >Não possui <em>lifecycle</em> (CI / staging / production).</li>
+            <li >Não possui foco em <em>experiência</em> de usuário e administrador.</li>
+          </ul>
+          <div class="fragment">
+            <h3>Solução:</h3>
+            <br>
+             <img class="fragment" src="images/dockersmall.png" class="plain" size="10px" />
+             <img class="fragment" src="images/kubernetessmall.png" alt="Kubernetes logo concept #2" />
+             <img class="fragment" src="images/openshift.png" alt="Kubernetes logo concept #2" />
+             
+          </div>
+          
+        </section>
+       
+
+        <!--OPENSHIFT 3: How is it built?//-->
+        <section id="intro-openshift-3">
+          <h2>Part 4:</h2>
+          <img style="height: 500px; background-color: #FFF;" src="images/openshift_logo.png" alt="OpenShift Logo" />
+          <aside class="notes">
+            <p>So far today, we've introduced Docker for running containerized applications, and we've
+            introduced Kubernetes as a cluster management layer over the top. But when we compare that
+            to a complete Platform-as-a-Service system, we can see a number of gaps. So just as we started
+            describing Kubernetes in terms of what Docker is missing, let's start talking about the new
+            OpenShift architecture in terms of what Kubernetes is missing... aside from a logo, of course.</p>
+          </aside>
+        </section>
+
+        <section>
+          <h2>O que é possível fazer com OpenShift?</h2>
+          <img style="height: 500px; border: 0px;" src="images/Supported_Stuff.png" />
+        </section>
+        <section>
+          <h2>Como funciona?</h2>
+          <img style="border: 0px;" src="images/lxc_architecture.png" />
+          <p>Provem suporte a multi-tenancy via containers linux</p>
+        </section>
+        <section>
+          <h2>Como funciona?</h2>
+          <img style="border: 0px;" src="images/simplified_openshift_diagram.png" />
+          <p>e adiciona gerenciamento centralizado e facilidade para escalar aplicações implantadas</p>
+        </section>
+      
+       <!--OPENSHIFT 3: How do I use it?//-->
+        <section >
+          <h2>Arquitetura AWS</h2>
+          <img src="images/arch.png" />
+          <aside class="notes">
+            <p>The last thing we want to talk about today is the OpenShift experience. This brings us full circle, and
+            back to the promise of being able to use Docker and Containers to simplify your life.</p>
+          </aside>
+        </section>
+ <section>
+          <h2>Arquitetura</h2>
+          <img style="border: 0px; height: 600px;" src="images/Architecture-OpenShift-v3-900x544.png" />
+          
+          
+        </section>
+         <section >
+          <h2>Arquitetura Openshift</h2>
+          <img src="images/Architecture-OpenShift-v3-900x611.png" />
+          <aside class="notes">
+            <p>The last thing we want to talk about today is the OpenShift experience. This brings us full circle, and
+            back to the promise of being able to use Docker and Containers to simplify your life.</p>
+          </aside>
+        </section>
+       
+
+       
+       
+        
+        
+       <section>
+          <h2>Build Option #1:<br /><code>docker-builder</code></h2>
+          <p>&nbsp;</p>
+          
+          <img style="border: 0px;" src="images/Openshift3-Docker-Build-900x255.png" />
+          
+          
+        </section>
+
+         <section>
+           <h2>Build Option #2:<br />Source-to-Image (<code>sti</code>)</h2>
+          <p>&nbsp;</p>
+          
+          <img style="border: 0px" src="images/Openshift3-STI-Build-900x378.png" />
+          
+          
+        </section>
+       
+        
+         
+       
+        <section>
+          <h3>Lifecycle in OpenShift 3:</h3>
+          <h2>Implantação</h2>
+        
+          <table style="margin-left: auto; margin-right: auto;">
+            <tr>
+              <td>
+                <p><code style="color: #F66;">Implantação</code>, <em style="color: #CCC;">n.</em><br />Uma combinação de:</p>
+                <ul>
+                  <li>O replication Controller descreve os estados desejaveis em runtime.</li>
+                  <li>Uma ou mais <em>trigger policies</em> </li>
+                  <li>Uma <em>estratégia</em> de implantação</li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+        </section>
+        <section>
+          <h2>Políticas de Trigger de Implantação</h2>
+          <p>&nbsp;</p>
+          <table style="margin-left: auto; margin-right: auto;">
+            <tr>
+              <td style="text-align: center;" class="fragment">
+                <p>Manual</p>
+                <img style="border: 0px; height: 360px; width: 240px;" src="images/trigger_manual.png" />
+              </td>
+              <td style="text-align: center;" class="fragment">
+                <p>Alteração no código</p>
+                <img style="border: 0px; height: 360px; width: 240px;" src="images/trigger_code.png" />
+              </td>
+              <td style="text-align: center;" class="fragment">
+                <p>Alteração na aplicação</p>
+                <img style="border: 0px; height: 360px; width: 240px;" src="images/trigger_config.png" />
+              </td>
+              <td style="text-align: center;" class="fragment">
+                <p>Alteração na imagem</p>
+                <img style="border: 0px; height: 360px; width: 240px;" src="images/trigger_docker.png" />
+              </td>
+            </tr>
+          </table>
+          <aside class="notes">
+            <p>Manual: you tell OpenShift to run the deployment.</p>
+            <p>Image change: OpenShift 3 watches the state of images in the cluster's private Docker repo. When an image is updated, redeployment is triggered.</p>
+            <p>config change: If I change the definition of my configu file, redeploy the pieces covered in the deployment configuration.</p>
+          </aside>
+        </section>
+        <section>
+          <h2>Estratégias de implantação</h2>
+          <table style="margin-left: auto; margin-right: auto;">
+            <tr>
+              <td></td>
+              <td>&nbsp;</td>
+              <td>
+                <dl>
+                  <dt>Rolling</dt>
+                  <dd>Substitui aos poucos os PODs antigos pelos novos<br />&nbsp;</dd>
+                  <dt>Recreate</dt>
+                  <dd>Remove todos os PODs antigos e depois cria os novos<br />&nbsp;</dd>
+                  <dt>Canary release</dt>
+                  <dd>Pemite balancear a carga entre duas (versões de uma) aplicaçõe(s). Criei uma segunda aplicação (ex siteb) e edite a rota da app inicial:<br />&nbsp;</dd>
+                  <dt>Blue/Green</dt>
+                  <dd>Permite chavear a rota entre duas aplicações distintas. Basta remover a config spec.alternateBackends da rota e alterar o camp spec.to.name para o nome da app que deseja rotear.</dd>
+                </dl>
+              </td>
+            </tr>
+          </table>
+          <aside class="notes">
+            <p>A cluster master is a host that acts as both a front end and health monitor for a Kubernetes cluster. The
+            master it self does not run docker and therefore does not host pods. Instead, it provides a web API and runs
+            a simple monitoring service that checks for the existence of specified pod deployments.</p>
+            <p>Finally, the cluster master also provides a utility called kubecfg that enables users to interact with the
+            cluster.</p>
+          </aside>
+        </section>
+
+       
+
+         <section >
+          <h2>Arquitetura Aplicação</h2>
+          <br>
+          <img src="images/microservices.png" />
+          
+        </section>
+        
+           <section >
+          <h2>Projeto</h2>
+          <br>
+          <img src="images/interface1.png" />
+          
+        </section>
+         <section >
+          <h2>Pod</h2>
+          <br>
+          <img src="images/testepod.png" />
+          
+        </section>
+          <section >
+          <h2>Menu</h2>
+          <br>
+          <img src="images/menu.png" />
+          
+        </section>
+          <section >
+          <h2>3 pods sem auto escalonamento</h2>
+          <br>
+          <img src="images/teste3.png" />
+          
+        </section>
+          <section >
+          <h2>3 pods sem auto escalonamento</h2>
+          <br>
+          <img src="images/teste1.png" />
+          
+        </section>
+
+        <section >
+          <h2>auto escalonamento</h2>
+          <br>
+          <img src="images/teste5.png" />
+          
+        </section>
+       
+         <section >
+          <h2>auto escalonamento</h2>
+          <br>
+          <img src="images/teste-autoscalling.png" />
+          
+        </section>
+        
+       
+        <section>
+          <h1>Obrigado!</h1>
+          <p>&nbsp;</p>
+          <p>&nbsp;</p>
+          <p>Links:</p>
+          <ul>
+            <li>Docker: <a href="https://docker.com/">docker.com</a></li>
+            <li>Kubernetes: <a href="https://github.com/GoogleCloudPlatform/kubernetes">github.com/GoogleCloudPlatform/kubernetes</a></li>
+            <li>OpenShift 3: <a href="https://github.com/openshift/origin">github.com/openshift/origin</a></li>
+          </ul>
+          https://blog.openshift.com/openshift-3-1-pod-autoscaling/
+          https://www.openshift.com/about/logos.html
+          https://docs.openshift.com/enterprise/3.1/dev_guide/deployments.html#creating-a-deployment-configuration
+          
+        </section>
+         <section>
+          
+           <aside class="notes">
+            <p>dev2 redhat</p>
+            <p>~/mestrado/artigo_cloud/ambiente</p>
+            <p>ab -n 100000 -c 75  http://userreg-msdev.35.164.160.191.nip.io/</p>
+            <p>resources:
+                limits:
+                  cpu: 366m
+                  memory: 512Mi
+                requests:
+                  cpu: 10m
+                  memory: 128Mi
+            </p>
+            https://console.35.164.160.191.nip.io:8443/console/project/ipt/overview
+            https://loader.io/tests
+            http://userreg-ipt.35.164.160.191.nip.io/
+           <p>when we pull ubuntu image then it have different kernel
+No it does not: it does not have the kernel part: it relies on the kernel of the host (the one running docker engine) for all system calls.
+
+As mentioned in "Docker vs Virtualization":
+
+Initially Docker was built as an abstraction layer on top of Linux Containers (LXC). LXC itself is a just an API for the Linux containment features.
+Starting with Docker 0.9, LXC is not the default anymore and has been replaced with a custom library (libcontainer) written in Go. Overall libcontainer’s advantage is a more consistent interface to the Kernel across various Linux distributions. The only gotcha is that it requires Linux 3.8 and higher.
+See more at "Why Understanding User Space vs. Kernel Space Matters".
+Also "Operating System Containers vs. Application Containers":
+
+Containers are the products of operating system virtualization. They provide a lightweight virtual environment that groups and isolates a set of processes and resources such as memory, CPU, disk, etc., from the host and any other containers.
+The isolation guarantees that any processes inside the container cannot see any processes or resources outside the container.
+
+http://stackoverflow.com/questions/32756988/what-is-meant-by-shared-kernel-in-docker</p>
+          </aside>
+        </section>
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+    <script>
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Parallax scrolling
+        // parallaxBackgroundImage: 'images/parallax_5f.png',
+        // parallaxBackgroundSize: '5110px 1600px',
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+    </script>
+  </body>
+</html>
